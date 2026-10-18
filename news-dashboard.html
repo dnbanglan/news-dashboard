@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="bn" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>জার্নাল অটোমেশন ড্যাশবোর্ড - Journal Automation System</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts for Bengali & English -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind_Siliguri:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fef2f2',
+                            100: '#ffe1e1',
+                            500: '#ef4444',
+                            600: '#dc2626',
+                            700: '#b91c1c',
+                            800: '#991b1b',
+                            900: '#7f1d1d',
+                        },
+                        dark: {
+                            bg: '#0b0f17',
+                            card: '#151c28',
+                            border: '#232d3f',
+                            hover: '#1e293b'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Hind Siliguri', 'Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Hind Siliguri', 'Inter', sans-serif;
+            background-color: #0b0f17;
+            color: #f3f4f6;
+        }
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0f17;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #232d3f;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #dc2626;
+        }
+        .canvas-shadow {
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.8), 0 0 15px rgba(220, 38, 38, 0.15);
+        }
+        .active-tab {
+            background-color: #dc2626 !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-brand-600 selection:text-white">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-dark-card border-b border-dark-border sticky top-0 z-50 px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center space-x-3 space-x-reverse">
+            <button id="mobile-menu-btn" class="md:hidden text-gray-400 hover:text-white focus:outline-none p-1">
+                <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+            <div class="flex items-center space-x-2 space-x-reverse">
+                <div class="bg-brand-600 text-white p-2 rounded-lg font-bold text-lg flex items-center justify-center w-10 h-10 shadow-lg shadow-brand-600/30">
+                    <i class="fa-solid fa-newspaper"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight tracking-wide flex items-center gap-2">
+                        জার্নাল অটোমেশন <span class="bg-brand-600/20 text-brand-500 text-xs px-2 py-0.5 rounded-full border border-brand-500/30 font-semibold">PRO v3.2</span>
+                    </h1>
+                    <p class="text-xs text-gray-400">নিউজ পোর্টাল সোশ্যাল মিডিয়া অটো-পাইলট সিস্টেম</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Status & Quick Actions -->
+        <div class="flex items-center space-x-4 space-x-reverse text-sm">
+            <div class="hidden sm:flex items-center space-x-2 bg-dark-bg px-3 py-1.5 rounded-full border border-dark-border">
+                <span class="relative flex h-2.5 w-2.5">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                </span>
+                <span class="text-xs font-medium text-emerald-400">অটোমেশন সক্রিয়</span>
+            </div>
+            
+            <button onclick="triggerGlobalSync()" class="bg-dark-bg hover:bg-dark-hover border border-dark-border text-gray-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-2">
+                <i class="fa-solid fa-rotate text-brand-500"></i>
+                <span class="hidden md:inline">ম্যানুয়াল সিঙ্ক</span>
+            </button>
+            
+            <div class="flex items-center gap-2 border-l border-dark-border pl-4">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Admin Avatar" class="w-8 h-8 rounded-full border border-brand-500/50 object-cover">
+                <div class="hidden lg:block">
+                    <p class="text-xs font-semibold leading-none">দৈনিক ইত্তেফাক ডেক্স</p>
+                    <p class="text-[10px] text-gray-400">Chief Editor</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace Area -->
+    <div class="flex-1 flex overflow-hidden">
+
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="w-64 bg-dark-card border-r border-dark-border flex-shrink-0 flex flex-col justify-between transition-all duration-300 z-40 fixed md:relative inset-y-0 left-0 transform -translate-x-full md:translate-x-0 mt-14 md:mt-0">
+            <div class="p-4 space-y-1 overflow-y-auto">
+                <div class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-gray-500">প্রধান নেভিগেশন</div>
+                
+                <button onclick="switchTab('tab-dashboard')" id="btn-tab-dashboard" class="nav-btn w-full flex items-center space-x-3 space-x-reverse px-3 py-2.5 rounded-xl text-sm font-medium transition active-tab">
+                    <i class="fa-solid fa-chart-line w-5 text-center"></i>
+                    <span>ওভারভিউ ড্যাশবোর্ড</span>
+                </button>
+
+                <button onclick="switchTab('tab-generator')" id="btn-tab-generator" class="nav-btn w-full flex items-center space-x-3 space-x-reverse px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-white hover:bg-dark-hover transition">
+                    <i class="fa-solid fa-wand-magic-sparkles w-5 text-center text-brand-500"></i>
+                    <span>ফটোকার্ড জেনারেটর</span>
+                </button>
+
+                <button onclick="switchTab('tab-scheduler')" id="btn-tab-scheduler" class="nav-btn w-full flex items-center space-x-3 space-x-reverse px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-white hover:bg-dark-hover transition">
+                    <i class="fa-regular fa-calendar-check w-5 text-center text-blue-400"></i>
+                    <span>দৈনিক অটো শিডিউল</span>
+                </button>
+
+                <button onclick="switchTab('tab-reels')" id="btn-tab-reels" class="nav-btn w-full flex items-center space-x-3 space-x-reverse px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-white hover:bg-dark-hover transition">
+                    <i class="fa-solid fa-clapperboard w-5 text-center text-purple-400"></i>
+                    <span>টপ-১০ ও রিলস ইঞ্জিন</span>
+                </button>
+
+                <div class="pt-4 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-gray-500">সেটিংস ও বট</div>
+
+                <button onclick="switchTab('tab-integrations')" id="btn-tab-integrations" class="nav-btn w-full flex items-center space-x-3 space-x-reverse px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-white hover:bg-dark-hover transition">
+                    <i class="fa-solid fa-plug w-5 text-center text-amber-400"></i>
+                    <span>সোশ্যাল ও টেলিগ্রাম বট</span>
+                </button>
+
+                <button onclick="switchTab('tab-logs')" id="btn-tab-logs" class="nav-btn w-full flex items-center space-x-3 space-x-reverse px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-white hover:bg-dark-hover transition">
+                    <i class="fa-solid fa-list-check w-5 text-center text-emerald-400"></i>
+                    <span>লাইভ অটোমেটেড লগ</span>
+                </button>
+            </div>
+
+            <!-- Bot Status Footer Box -->
+            <div class="p-4 border-t border-dark-border bg-dark-bg/50 m-3 rounded-xl border">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-semibold text-gray-300 flex items-center gap-1.5">
+                        <i class="fa-brands fa-telegram text-sky-400"></i> টেলিগ্রাম বট
+                    </span>
+                    <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full font-bold">অনলাইন</span>
+                </div>
+                <p class="text-[11px] text-gray-400">বট কম্যান্ড: <code class="text-brand-500 font-mono">/breaking</code> বা ফটো পাঠালে অটো পোস্ট হবে।</p>
+            </div>
+        </aside>
+
+        <!-- Main Content Canvas -->
+        <main class="flex-1 overflow-y-auto p-4 md:p-6 bg-dark-bg">
+
+            <!-- TAB 1: OVERVIEW DASHBOARD -->
+            <section id="tab-dashboard" class="tab-content space-y-6">
+                <!-- Banner Stat Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-dark-card border border-dark-border p-4 rounded-xl flex items-center justify-between">
+                        <div>
+                            <p class="text-xs text-gray-400 font-medium">আজকের অটো পোস্ট</p>
+                            <h3 class="text-2xl font-bold mt-1 text-white" id="stat-today-posts">৪৭ টি</h3>
+                            <span class="text-[11px] text-emerald-400 flex items-center gap-1 mt-1">
+                                <i class="fa-solid fa-arrow-trend-up"></i> ১২% বৃদ্ধি গতদিনের চেয়ে
+                            </span>
+                        </div>
+                        <div class="w-12 h-12 bg-brand-600/10 text-brand-500 border border-brand-500/20 rounded-xl flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-dark-card border border-dark-border p-4 rounded-xl flex items-center justify-between">
+                        <div>
+                            <p class="text-xs text-gray-400 font-medium">অটো ফটোকার্ড জেনারেট</p>
+                            <h3 class="text-2xl font-bold mt-1 text-white" id="stat-photocards">১৩৪ টি</h3>
+                            <span class="text-[11px] text-sky-400 flex items-center gap-1 mt-1">
+                                <i class="fa-solid fa-bolt"></i> ১.২ সেকেন্ডে রেন্ডার
+                            </span>
+                        </div>
+                        <div class="w-12 h-12 bg-sky-500/10 text-sky-400 border border-sky-500/20 rounded-xl flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-image"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-dark-card border border-dark-border p-4 rounded-xl flex items-center justify-between">
+                        <div>
+                            <p class="text-xs text-gray-400 font-medium">শিডিউল্ড ডেইলি কার্ড</p>
+                            <h3 class="text-2xl font-bold mt-1 text-white">৬/৬ সম্পন্ন</h3>
+                            <span class="text-[11px] text-emerald-400 flex items-center gap-1 mt-1">
+                                <i class="fa-solid fa-check"></i> আবহাওয়া, নামাজ ও ইতিহাস
+                            </span>
+                        </div>
+                        <div class="w-12 h-12 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-xl flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-dark-card border border-dark-border p-4 rounded-xl flex items-center justify-between">
+                        <div>
+                            <p class="text-xs text-gray-400 font-medium">সংযুক্ত চ্যানেল</p>
+                            <h3 class="text-2xl font-bold mt-1 text-white">৪ টি প্ল্যাটফর্ম</h3>
+                            <span class="text-[11px] text-purple-400 flex items-center gap-1 mt-1">
+                                FB, Telegram, X, YouTube
+                            </span>
+                        </div>
+                        <div class="w-12 h-12 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-xl flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-share-nodes"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Workflows & Live Activity Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    
+                    <!-- Left 2 Cols: Automation Workflows -->
+                    <div class="lg:col-span-2 bg-dark-card border border-dark-border rounded-xl p-5 space-y-4">
+                        <div class="flex items-center justify-between border-b border-dark-border pb-3">
+                            <h3 class="font-bold text-base flex items-center gap-2">
+                                <i class="fa-solid fa-gears text-brand-500"></i> অটোমেশন সার্ভিস স্ট্যাটাস
+                            </h3>
+                            <span class="text-xs text-gray-400">সকল সার্ভিস স্বাভাবিক রয়েছে</span>
+                        </div>
+
+                        <div class="space-y-3">
+                            <!-- Workflow Item 1 -->
+                            <div class="flex items-center justify-between p-3 bg-dark-bg rounded-lg border border-dark-border hover:border-gray-700 transition">
+                                <div class="flex items-center space-x-3 space-x-reverse">
+                                    <div class="w-9 h-9 rounded-lg bg-blue-600/20 text-blue-400 flex items-center justify-center">
+                                        <i class="fa-brands fa-facebook-f text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-semibold">নিউজ পাবলিশ ➔ অটো ফেসবুক ফটোকার্ড & কমেন্ট</h4>
+                                        <p class="text-xs text-gray-400">ওয়েবসাইটে পোস্ট হলেই ফটোকার্ড তৈরি ও কমেন্টে লিংক দেবে</p>
+                                    </div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" checked class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-600"></div>
+                                </label>
+                            </div>
+
+                            <!-- Workflow Item 2 -->
+                            <div class="flex items-center justify-between p-3 bg-dark-bg rounded-lg border border-dark-border hover:border-gray-700 transition">
+                                <div class="flex items-center space-x-3 space-x-reverse">
+                                    <div class="w-9 h-9 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center">
+                                        <i class="fa-brands fa-telegram text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-semibold">টেলিগ্রাম বট ব্রেকিং নিউজ ইন্টিগ্রেশন</h4>
+                                        <p class="text-xs text-gray-400">টেলিগ্রামে শিরোনাম পাঠালে ব্রেকিং কার্ড তৈরি হবে</p>
+                                    </div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" checked class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-600"></div>
+                                </label>
+                            </div>
+
+                            <!-- Workflow Item 3 -->
+                            <div class="flex items-center justify-between p-3 bg-dark-bg rounded-lg border border-dark-border hover:border-gray-700 transition">
+                                <div class="flex items-center space-x-3 space-x-reverse">
+                                    <div class="w-9 h-9 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center">
+                                        <i class="fa-solid fa-video text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-semibold">নাইটলি টপ-১০ নিউজ ভয়েস রিলস</h4>
+                                        <p class="text-xs text-gray-400">প্রতি রাত ১০:০০ টায় সারাদিনের সেরা নিউজের ভিডিও রিলস তৈরি হবে</p>
+                                    </div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" checked class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-600"></div>
+                                </label>
+                            </div>
+
+                            <!-- Workflow Item 4 -->
+                            <div class="flex items-center justify-between p-3 bg-dark-bg rounded-lg border border-dark-border hover:border-gray-700 transition">
+                                <div class="flex items-center space-x-3 space-x-reverse">
+                                    <div class="w-9 h-9 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center">
+                                        <i class="fa-solid fa-sun text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-semibold">দৈনিক শুভ সকাল, আবহাওয়া ও নামাজের কার্ড</h4>
+                                        <p class="text-xs text-gray-400">প্রতিদিন নির্ধারিত সময়ে পেজে অটো পোস্ট হবে</p>
+                                    </div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" checked class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-600"></div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Col: Live Activity Feed Preview -->
+                    <div class="bg-dark-card border border-dark-border rounded-xl p-5 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between border-b border-dark-border pb-3 mb-4">
+                                <h3 class="font-bold text-base flex items-center gap-2">
+                                    <i class="fa-solid fa-satellite-dish text-emerald-400"></i> লাইভ অ্যাক্টিভিটি স্ট্রিম
+                                </h3>
+                                <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded font-mono">LIVE</span>
+                            </div>
+
+                            <div class="space-y-4 text-xs" id="dashboard-feed-list">
+                                <!-- Dynamic Items will populate here -->
+                            </div>
+                        </div>
+
+                        <button onclick="switchTab('tab-logs')" class="mt-4 w-full text-center py-2 bg-dark-bg hover:bg-dark-hover border border-dark-border text-gray-300 text-xs rounded-lg transition">
+                            সকল লগ বিস্তারিত দেখুন <i class="fa-solid fa-arrow-right text-[10px] mr-1"></i>
+                        </button>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- TAB 2: PHOTOCARD STUDIO & AUTO-PUBLISHER -->
+            <section id="tab-generator" class="tab-content hidden space-y-6">
+                <div class="flex flex-col lg:flex-row gap-6">
+                    
+                    <!-- Form Controls (Left) -->
+                    <div class="w-full lg:w-1/2 bg-dark-card border border-dark-border rounded-xl p-5 space-y-4">
+                        <div class="flex items-center justify-between border-b border-dark-border pb-3">
+                            <h3 class="font-bold text-base flex items-center gap-2">
+                                <i class="fa-solid fa-pen-nib text-brand-500"></i> ফটোকার্ড কন্টেন্ট ও টেমপ্লেট
+                            </h3>
+                            <div class="flex items-center gap-1">
+                                <button onclick="setTemplate('breaking')" class="px-2.5 py-1 text-xs bg-red-600/20 text-red-400 border border-red-500/30 rounded-md font-medium hover:bg-red-600 hover:text-white transition">ব্রেকিং</button>
+                                <button onclick="setTemplate('general')" class="px-2.5 py-1 text-xs bg-slate-700 text-gray-300 rounded-md font-medium hover:bg-slate-600 transition">সাধারণ</button>
+                                <button onclick="setTemplate('quote')" class="px-2.5 py-1 text-xs bg-amber-600/20 text-amber-400 border border-amber-500/30 rounded-md font-medium hover:bg-amber-600 hover:text-white transition">উক্তি</button>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-300 mb-1">ক্যাটাগরি ব্যাজ</label>
+                                <input type="text" id="card-category" value="জাতীয় সংবাদ" oninput="drawCard()" class="w-full bg-dark-bg border border-dark-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-brand-500">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-300 mb-1">সংবাদের শিরোনাম (Headline)</label>
+                                <textarea id="card-headline" rows="3" oninput="drawCard()" class="w-full bg-dark-bg border border-dark-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-brand-500">এমপিদের শপথ ও সংসদ অধিবেশন আহ্বান নিয়ে অন্তর্বর্তী সরকারের গুরুত্বপূর্ণ সিদ্ধান্ত ঘোষণা</textarea>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-300 mb-1">নিউজের লিংক (কমেন্টে অটো পোস্টের জন্য)</label>
+                                <input type="url" id="card-news-url" value="https://dnbanglanews.com/news/109283" class="w-full bg-dark-bg border border-dark-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-brand-500 font-mono text-gray-300">
+                            </div>
+
+                            <!-- Custom Image / Logo Upload -->
+                            <div class="grid grid-cols-2 gap-3 pt-2">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-300 mb-1">ব্যাকগ্রাউন্ড ছবি আপলোড</label>
+                                    <input type="file" id="bg-upload" accept="image/*" onchange="handleImageUpload(event, 'bg')" class="block w-full text-xs text-gray-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-dark-bg file:text-brand-500 border border-dark-border rounded-lg cursor-pointer">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-300 mb-1">লোগো আপলোড</label>
+                                    <input type="file" id="logo-upload" accept="image/*" onchange="handleImageUpload(event, 'logo')" class="block w-full text-xs text-gray-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-dark-bg file:text-brand-500 border border-dark-border rounded-lg cursor-pointer">
+                                </div>
+                            </div>
+
+                            <!-- Fine Tuning Controls -->
+                            <div class="bg-dark-bg p-3 rounded-lg border border-dark-border space-y-3">
+                                <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block">ফন্ট ও লেআউট কাস্টমাইজেশন</span>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-[11px] text-gray-400 mb-1">ফন্ট সাইজ (<span id="fontSize-val">42</span>px)</label>
+                                        <input type="range" id="card-font-size" min="28" max="60" value="42" oninput="document.getElementById('fontSize-val').innerText = this.value; drawCard();" class="w-full accent-brand-600">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[11px] text-gray-400 mb-1">ডার্ক ওভারলে অপাসিটি</label>
+                                        <input type="range" id="card-overlay" min="0" max="90" value="60" oninput="drawCard()" class="w-full accent-brand-600">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Target Social Platforms Checkboxes -->
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-300 mb-2">যেসব পেজে অটো পোস্ট হবে:</label>
+                                <div class="flex flex-wrap gap-2">
+                                    <label class="inline-flex items-center bg-dark-bg px-3 py-1.5 rounded-lg border border-dark-border text-xs cursor-pointer">
+                                        <input type="checkbox" checked class="rounded text-brand-600 focus:ring-0 mr-2">
+                                        <i class="fa-brands fa-facebook text-blue-500 ml-1"></i> ফেসবুক পেজ
+                                    </label>
+                                    <label class="inline-flex items-center bg-dark-bg px-3 py-1.5 rounded-lg border border-dark-border text-xs cursor-pointer">
+                                        <input type="checkbox" checked class="rounded text-brand-600 focus:ring-0 mr-2">
+                                        <i class="fa-brands fa-telegram text-sky-400 ml-1"></i> টেলিগ্রাম চ্যানেল
+                                    </label>
+                                    <label class="inline-flex items-center bg-dark-bg px-3 py-1.5 rounded-lg border border-dark-border text-xs cursor-pointer">
+                                        <input type="checkbox" class="rounded text-brand-600 focus:ring-0 mr-2">
+                                        <i class="fa-brands fa-x-twitter text-gray-300 ml-1"></i> এক্স (টুইটার)
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="pt-3 flex gap-3">
+                                <button onclick="triggerAutoPublish()" class="flex-1 bg-brand-600 hover:bg-brand-700 text-white font-bold py-2.5 px-4 rounded-xl shadow-lg shadow-brand-600/30 transition flex items-center justify-center gap-2 text-sm">
+                                    <i class="fa-solid fa-paper-plane"></i> ফেসবুকে অটো পোস্ট করুন
+                                </button>
+                                <button onclick="downloadCard()" class="bg-dark-bg hover:bg-dark-hover border border-dark-border text-gray-200 px-4 py-2.5 rounded-xl transition text-sm font-semibold flex items-center gap-2">
+                                    <i class="fa-solid fa-download"></i> ডাইনলোড
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Canvas Preview (Right) -->
+                    <div class="w-full lg:w-1/2 flex flex-col items-center justify-start space-y-4">
+                        <div class="w-full bg-dark-card border border-dark-border rounded-xl p-4 flex items-center justify-between">
+                            <span class="text-xs font-bold text-gray-300 flex items-center gap-2">
+                                <i class="fa-solid fa-eye text-emerald-400"></i> লাইভ এইচডি ক্যানভাস প্রিভিউ (1200x675)
+                            </span>
+                            <span class="text-[10px] bg-brand-600/20 text-brand-500 border border-brand-500/30 px-2 py-0.5 rounded font-mono">REAL-TIME</span>
+                        </div>
+
+                        <!-- Canvas Box Container -->
+                        <div class="w-full flex justify-center bg-black/40 p-4 rounded-xl border border-dark-border canvas-shadow">
+                            <canvas id="photocardCanvas" width="1200" height="675" class="w-full h-auto max-w-full rounded-lg border border-gray-800"></canvas>
+                        </div>
+
+                        <!-- Instant Simulation Feed Message -->
+                        <div id="post-sim-alert" class="w-full hidden p-4 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-xl text-xs space-y-2 animate-fade-in">
+                            <div class="flex items-center justify-between font-bold">
+                                <span><i class="fa-solid fa-circle-check"></i> সফলভাবে সোশ্যাল মিডিয়ায় পোস্ট করা হয়েছে!</span>
+                                <span class="font-mono text-[10px]">Just Now</span>
+                            </div>
+                            <p class="text-gray-300">ফটোকার্ডটি ফেসবুক পেজ ও টেলিগ্রাম চ্যানেলে পাঠানো হয়েছে। কমেন্ট বক্সে অটো লিংক যুক্ত হয়েছে:</p>
+                            <div class="bg-dark-bg p-2 rounded border border-dark-border font-mono text-[11px] text-sky-400 truncate">
+                                💬 "📌 বিস্তারিত প্রতিবেদন পড়ুন: <span id="sim-comment-link"></span>"
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- TAB 3: DAILY AUTO-SCHEDULER -->
+            <section id="tab-scheduler" class="tab-content hidden space-y-6">
+                <div class="bg-dark-card border border-dark-border rounded-xl p-5 space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-dark-border pb-3 gap-2">
+                        <div>
+                            <h3 class="font-bold text-base flex items-center gap-2">
+                                <i class="fa-regular fa-calendar-check text-blue-400"></i> দৈনিক অটোমেটিক শিডিউল্ড কার্ডসমূহ
+                            </h3>
+                            <p class="text-xs text-gray-400">প্রতিদিন নির্দিষ্ট সময়ে আপনার লোগোসহ অটোমেটিক তথ্যভিত্তিক কার্ড সোশ্যাল মিডিয়ায় পোস্ট হবে</p>
+                        </div>
+                        <button onclick="alert('নতুন অটোমেশন রুল যুক্ত করার প্যানেল')" class="bg-brand-600/20 hover:bg-brand-600 text-brand-400 hover:text-white border border-brand-500/30 px-3 py-1.5 rounded-lg text-xs font-semibold transition self-start sm:self-auto">
+                            + নতুন রুল যোগ করুন
+                        </button>
+                    </div>
+
+                    <!-- Scheduler Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        
+                        <!-- Schedule Item 1: Morning Greetings -->
+                        <div class="bg-dark-bg border border-dark-border p-4 rounded-xl space-y-3 relative">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-sun"></i> শুভ সকাল কার্ড
+                                </span>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" checked class="sr-only peer">
+                                    <div class="w-9 h-5 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-600"></div>
+                                </label>
+                            </div>
+                            <p class="text-xs text-gray-300">আজকের দিনটির শুভ সূচনা বার্তা ও অনুপ্রেরণামূলক বাণী অটো জেনারেট হবে।</p>
+                            <div class="flex items-center justify-between text-xs text-gray-400 border-t border-dark-border pt-2">
+                                <span>সময়: <strong class="text-white">সকাল ০৬:০০ টা</strong></span>
+                                <button onclick="previewPresetCard('morning')" class="text-brand-500 hover:underline">প্রিভিউ দেখুন</button>
+                            </div>
+                        </div>
+
+                        <!-- Schedule Item 2: Weather Update -->
+                        <div class="bg-dark-bg border border-dark-border p-4 rounded-xl space-y-3 relative">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-sky-400 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-cloud-sun"></i> আবহাওয়ার বার্তা
+                                </span>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" checked class="sr-only peer">
+                                    <div class="w-9 h-5 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-600"></div>
+                                </label>
+                            </div>
+                            <p class="text-xs text-gray-300">আবহাওয়া API থেকে লাইভ তাপমাত্রা ও বৃষ্টিপাতের তথ্য দিয়ে কার্ড তৈরি হবে।</p>
+                            <div class="flex items-center justify-between text-xs text-gray-400 border-t border-dark-border pt-2">
+                                <span>সময়: <strong class="text-white">সকাল ০৭:০০ টা</strong></span>
+                                <button onclick="previewPresetCard('weather')" class="text-brand-500 hover:underline">প্রিভিউ দেখুন</button>
+                            </div>
+                        </div>
+
+                        <!-- Schedule Item 3: Prayer Times -->
+                        <div class="bg-dark-bg border border-dark-border p-4 rounded-xl space-y-3 relative">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-mosque"></i> নামাজের সময়সূচি
+                                </span>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" checked class="sr-only peer">
+                                    <div class="w-9 h-5 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-600"></div>
+                                </label>
+                            </div>
+                            <p class="text-xs text-gray-300">পাঁচ ওয়াক্ত নামাজের সময়সূচি ইসলামিক ফাউন্ডেশনের সময় অনুযায়ী পোস্ট হবে।</p>
+                            <div class="flex items-center justify-between text-xs text-gray-400 border-t border-dark-border pt-2">
+                                <span>সময়: <strong class="text-white">সকাল ০৪:৩০ টা</strong></span>
+                                <button onclick="previewPresetCard('prayer')" class="text-brand-500 hover:underline">প্রিভিউ দেখুন</button>
+                            </div>
+                        </div>
+
+                        <!-- Schedule Item 4: Today in History -->
+                        <div class="bg-dark-bg border border-dark-border p-4 rounded-xl space-y-3 relative">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-purple-400 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-landmark"></i> ইতিহাসে আজকের দিন
+                                </span>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" checked class="sr-only peer">
+                                    <div class="w-9 h-5 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-600"></div>
+                                </label>
+                            </div>
+                            <p class="text-xs text-gray-300">আজকের এই দিনে ইতিহাসে ঘটে যাওয়া বিখ্যাত ঘটনা ও স্মরণীয় ব্যক্তিগণের কার্ড।</p>
+                            <div class="flex items-center justify-between text-xs text-gray-400 border-t border-dark-border pt-2">
+                                <span>সময়: <strong class="text-white">সকাল ০৯:০০ টা</strong></span>
+                                <button onclick="previewPresetCard('history')" class="text-brand-500 hover:underline">প্রিভিউ দেখুন</button>
+                            </div>
+                        </div>
+
+                        <!-- Schedule Item 5: Ramadan Timing -->
+                        <div class="bg-dark-bg border border-dark-border p-4 rounded-xl space-y-3 relative border-brand-500/30">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-brand-400 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-moon"></i> সেহেরি ও ইফতারের সময়
+                                </span>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" checked class="sr-only peer">
+                                    <div class="w-9 h-5 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-600"></div>
+                                </label>
+                            </div>
+                            <p class="text-xs text-gray-300">রমজান মাসে আপনার সাইটের লোগোসহ সেহেরী ও ইফতারের কাউন্টডাউন ও সময়সূচি।</p>
+                            <div class="flex items-center justify-between text-xs text-gray-400 border-t border-dark-border pt-2">
+                                <span>সময়: <strong class="text-white">প্রতি রাতে ০৩:০০ টা</strong></span>
+                                <button onclick="previewPresetCard('ramadan')" class="text-brand-500 hover:underline">প্রিভিউ দেখুন</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: REELS & TOP-10 ENGINE -->
+            <section id="tab-reels" class="tab-content hidden space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    
+                    <!-- Reels Config -->
+                    <div class="bg-dark-card border border-dark-border rounded-xl p-5 space-y-4">
+                        <div class="border-b border-dark-border pb-3">
+                            <h3 class="font-bold text-base flex items-center gap-2">
+                                <i class="fa-solid fa-film text-purple-400"></i> অটোমেটিক রিলস ও টপ-১০ ভিডিও জেনারেটর
+                            </h3>
+                            <p class="text-xs text-gray-400">সংবাদের শিরোনাম থেকে এআই ভয়েসওভারসহ ভিডিও রিলস তৈরি করে ফেসবুক ও ইউটিউবে শর্টস পোস্ট করুন</p>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-300 mb-1">রিলসের ক্যাটাগরি পছন্দ করুন</label>
+                                <select class="w-full bg-dark-bg border border-dark-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-brand-500">
+                                    <option>আজকের টপ-১০ গুরুত্বপূর্ণ খবর (Nightly Roundup)</option>
+                                    <option>খেলাধুলার সেরা সংক্ষেপ (Sports Reels)</option>
+                                    <option>ব্রেকিং নিউজ এক নজরে (Instant Breaking Reels)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-300 mb-1">AI ভয়েস টোন নির্বাচন করুন</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button class="p-2 bg-brand-600/20 border border-brand-500 text-white rounded-lg text-xs font-medium flex items-center justify-center gap-2">
+                                        <i class="fa-solid fa-microphone text-brand-500"></i> পুরুষ প্রমিত উচ্চারণ
+                                    </button>
+                                    <button class="p-2 bg-dark-bg border border-dark-border text-gray-400 rounded-lg text-xs font-medium flex items-center justify-center gap-2 hover:text-white">
+                                        <i class="fa-solid fa-microphone text-purple-400"></i> নারী নিউজ কাস্টার
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-300 mb-1">আজকের নির্বাচিত ১০ টি শিরোনাম (Auto-Fetched)</label>
+                                <ul class="bg-dark-bg border border-dark-border rounded-lg p-3 space-y-2 text-xs text-gray-300 max-h-48 overflow-y-auto">
+                                    <li class="flex items-start gap-2"><span class="text-brand-500 font-bold">১.</span> ঢাকায় দ্রুত গতিতে বাস্তবায়িত হচ্ছে নতুন উন্নয়ন প্রকল্প।</li>
+                                    <li class="flex items-start gap-2"><span class="text-brand-500 font-bold">২.</span> টি-২০ সিরিজে জয় দিয়ে শুভ সূচনা করল বাংলাদেশ দল।</li>
+                                    <li class="flex items-start gap-2"><span class="text-brand-500 font-bold">৩.</span> চাল ও নিত্যপণ্যের বাজারে স্বস্তি ফেরাতে সরকারের বিশেষ অভিযান।</li>
+                                    <li class="flex items-start gap-2"><span class="text-brand-500 font-bold">৪.</span> চলতি মাসে রেকর্ড পরিমাণ রেমিট্যান্স পাঠিয়েছেন প্রবাসীরা।</li>
+                                    <li class="flex items-start gap-2"><span class="text-brand-500 font-bold">৫.</span> আন্তর্জাতিক বাজারে অপরিশোধিত জ্বালানি তেলের দাম কমেছে।</li>
+                                </ul>
+                            </div>
+
+                            <button onclick="startReelsSimulation()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-2 text-sm shadow-lg shadow-purple-600/30">
+                                <i class="fa-solid fa-play"></i> রিলস ও ভয়েসওভার জেনারেট করুন
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Reels Live Player Simulator -->
+                    <div class="bg-dark-card border border-dark-border rounded-xl p-5 flex flex-col items-center justify-center space-y-4">
+                        <div class="text-center">
+                            <h4 class="font-bold text-sm text-gray-200">রিলস প্রিভিউ প্লেয়ার (9:16 Format)</h4>
+                            <p class="text-xs text-gray-400">ফেসবুক রিলস ও ইউটিউব শর্টসের জন্য প্রস্তুতকৃত নমুনা</p>
+                        </div>
+
+                        <!-- Phone Frame Simulator -->
+                        <div class="w-64 h-[420px] bg-black border-4 border-gray-800 rounded-[32px] overflow-hidden relative shadow-2xl flex flex-col justify-between p-4">
+                            <!-- Background Animated Gradient Simulated News Video -->
+                            <div class="absolute inset-0 bg-gradient-to-b from-brand-900/40 via-purple-900/40 to-black z-0 animate-pulse"></div>
+                            
+                            <!-- Header overlay -->
+                            <div class="relative z-10 flex items-center justify-between text-white text-[10px]">
+                                <span class="bg-brand-600 px-2 py-0.5 rounded-full font-bold">TOP 10 NEWS</span>
+                                <span class="bg-black/60 px-2 py-0.5 rounded-full font-mono"><i class="fa-solid fa-music text-purple-400 mr-1"></i> AI Voice</span>
+                            </div>
+
+                            <!-- News Content Center Overlay -->
+                            <div class="relative z-10 space-y-2 text-center my-auto">
+                                <span class="bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-[11px] font-bold text-emerald-400 border border-white/20">খবর নং ০১</span>
+                                <h3 id="reels-title-preview" class="text-sm font-bold text-white leading-snug px-2">
+                                    ঢাকায় দ্রুত গতিতে বাস্তবায়িত হচ্ছে নতুন উন্নয়ন প্রকল্প
+                                </h3>
+                            </div>
+
+                            <!-- Footer Overlay -->
+                            <div class="relative z-10 space-y-2">
+                                <div class="w-full bg-gray-700/50 h-1 rounded-full overflow-hidden">
+                                    <div id="reels-progress" class="bg-brand-500 h-full w-1/3 transition-all duration-300"></div>
+                                </div>
+                                <div class="flex items-center justify-between text-[11px]">
+                                    <span class="font-semibold text-gray-300">DN Bangla News</span>
+                                    <i class="fa-solid fa-volume-high text-brand-400 animate-bounce"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- TAB 5: SOCIAL & TELEGRAM BOT INTEGRATION -->
+            <section id="tab-integrations" class="tab-content hidden space-y-6">
+                <div class="bg-dark-card border border-dark-border rounded-xl p-5 space-y-5">
+                    <div class="border-b border-dark-border pb-3">
+                        <h3 class="font-bold text-base flex items-center gap-2">
+                            <i class="fa-solid fa-plug text-amber-400"></i> সোশ্যাল মিডিয়া API ও টেলিগ্রাম বট সংযোগ
+                        </h3>
+                        <p class="text-xs text-gray-400">আপনার ফেসবুক পেজ এবং টেলিগ্রাম বটের ক্র্যাডেন্সিয়ালগুলো নিচে নিরাপদে কনফিগার করুন</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        
+                        <!-- Facebook API Config -->
+                        <div class="bg-dark-bg p-4 rounded-xl border border-dark-border space-y-3">
+                            <div class="flex items-center space-x-2 space-x-reverse text-blue-400 font-bold text-sm border-b border-dark-border pb-2">
+                                <i class="fa-brands fa-facebook text-lg"></i>
+                                <span>ফেসবুক পেজ API সেটিংস</span>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-1">Facebook Page ID</label>
+                                <input type="text" value="10928374659281" class="w-full bg-dark-card border border-dark-border rounded-lg px-3 py-2 text-xs font-mono text-gray-300 focus:outline-none focus:border-brand-500">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-1">Page Access Token (Permanent Token)</label>
+                                <input type="password" value="EAAGm0PX4ZC0BAO9ZCZC..." class="w-full bg-dark-card border border-dark-border rounded-lg px-3 py-2 text-xs font-mono text-gray-300 focus:outline-none focus:border-brand-500">
+                            </div>
+
+                            <button onclick="alert('ফেসবুক পেজ কানেকশন সফলভাবে ভেরিফাইড!')" class="w-full bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white border border-blue-500/30 py-2 rounded-lg text-xs font-semibold transition">
+                                ফেসবুক পেজ কানেকশন টেস্ট করুন
+                            </button>
+                        </div>
+
+                        <!-- Telegram Bot Config -->
+                        <div class="bg-dark-bg p-4 rounded-xl border border-dark-border space-y-3">
+                            <div class="flex items-center space-x-2 space-x-reverse text-sky-400 font-bold text-sm border-b border-dark-border pb-2">
+                                <i class="fa-brands fa-telegram text-lg"></i>
+                                <span>টেলিগ্রাম বট (অফিস রিমোট কন্ট্রোল)</span>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-1">Telegram Bot Father Token</label>
+                                <input type="password" value="7128394028:AAHxyZ..." class="w-full bg-dark-card border border-dark-border rounded-lg px-3 py-2 text-xs font-mono text-gray-300 focus:outline-none focus:border-brand-500">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-1">ওয়েবসাইট ওয়েবহুক এন্ডপয়েন্ট (Webhook URL)</label>
+                                <input type="text" value="https://api.dnbanglanews.com/v1/news-webhook" class="w-full bg-dark-card border border-dark-border rounded-lg px-3 py-2 text-xs font-mono text-gray-300 focus:outline-none focus:border-brand-500">
+                            </div>
+
+                            <button onclick="alert('টেলিগ্রাম বট সক্রিয় করা হয়েছে!')" class="w-full bg-sky-500/20 text-sky-400 hover:bg-sky-500 hover:text-white border border-sky-500/30 py-2 rounded-lg text-xs font-semibold transition">
+                                বট সার্ভিস রিস্টার্ট করুন
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 6: LIVE LOGS -->
+            <section id="tab-logs" class="tab-content hidden space-y-6">
+                <div class="bg-dark-card border border-dark-border rounded-xl p-5 space-y-4">
+                    <div class="flex items-center justify-between border-b border-dark-border pb-3">
+                        <h3 class="font-bold text-base flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-emerald-400"></i> লাইভ সিস্টেমে রেন্ডারিং ও পোস্ট হিস্ট্রি
+                        </h3>
+                        <button onclick="clearLogs()" class="text-xs text-gray-400 hover:text-white bg-dark-bg px-2.5 py-1 rounded border border-dark-border">
+                            লগ ক্লিয়ার করুন
+                        </button>
+                    </div>
+
+                    <div class="bg-dark-bg rounded-xl border border-dark-border p-4 font-mono text-xs overflow-x-auto space-y-2 max-h-[500px] overflow-y-auto" id="full-log-container">
+                        <!-- Logs will populate dynamically -->
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- JavaScript Logic & Canvas Rendering Engine -->
+    <script>
+        // System State
+        let currentTemplate = 'breaking';
+        let customBgImage = null;
+        let customLogoImage = null;
+
+        // Dynamic Logs Database
+        const logsData = [
+            { time: '11:00 AM', status: 'SUCCESS', platform: 'Facebook Page', msg: 'ফটোকার্ড অটো পোস্ট করা হয়েছে: "মেট্রোরেলের সময়সূচিতে পরিবর্তন"', comment: 'https://dnbanglanews.com/news/102' },
+            { time: '10:45 AM', status: 'SUCCESS', platform: 'Telegram Bot', msg: 'ব্রেকিং নিউজ ফটোকার্ড জেনারেট সম্পন্ন', comment: 'Telegram Channel Push' },
+            { time: '09:00 AM', status: 'SUCCESS', platform: 'Scheduled Task', msg: 'ইতিহাসে আজকের দিন তথ্যকার্ড অটো পোস্ট হয়েছে', comment: 'Scheduled Daily' },
+            { time: '07:00 AM', status: 'SUCCESS', platform: 'Scheduled Task', msg: 'ঢাকার লাইভ আবহাওয়ার তথ্যকার্ড পোস্ট সম্পন্ন', comment: 'Weather API' },
+            { time: '06:00 AM', status: 'SUCCESS', platform: 'Scheduled Task', msg: 'শুভ সকাল শুভেচ্ছা কার্ড পোস্ট হয়েছে', comment: 'Morning Greetings' }
+        ];
+
+        // Canvas Engine Initialization
+        window.onload = function() {
+            drawCard();
+            updateLogsUI();
+            
+            // Handle Mobile Sidebar Toggle
+            document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+                const sidebar = document.getElementById('sidebar');
+                sidebar.classList.toggle('-translate-x-full');
+            });
+        };
+
+        // Tab Navigation Switcher
+        function switchTab(tabId) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            
+            // Show selected tab content
+            document.getElementById(tabId).classList.remove('hidden');
+
+            // Update tab button styles
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active-tab', 'text-white');
+                btn.classList.add('text-gray-400');
+            });
+
+            const activeBtn = document.getElementById('btn-' + tabId);
+            if(activeBtn) {
+                activeBtn.classList.add('active-tab');
+                activeBtn.classList.remove('text-gray-400');
+            }
+
+            // Redraw canvas if switching to generator
+            if(tabId === 'tab-generator') {
+                setTimeout(drawCard, 50);
+            }
+        }
+
+        // Handle Background & Logo Image Uploads
+        function handleImageUpload(e, type) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    if (type === 'bg') customBgImage = img;
+                    if (type === 'logo') customLogoImage = img;
+                    drawCard();
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Set Quick Templates
+        function setTemplate(template) {
+            currentTemplate = template;
+            const categoryInput = document.getElementById('card-category');
+            
+            if(template === 'breaking') {
+                categoryInput.value = 'ব্রেকিং নিউজ';
+            } else if(template === 'general') {
+                categoryInput.value = 'জাতীয় সংবাদ';
+            } else if(template === 'quote') {
+                categoryInput.value = 'আজকের উক্তি';
+            }
+            drawCard();
+        }
+
+        // REAL-TIME CANVAS DRAWING ENGINE
+        function drawCard() {
+            const canvas = document.getElementById('photocardCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            const headline = document.getElementById('card-headline').value || 'এখানে সংবাদের শিরোনাম প্রদর্শিত হবে';
+            const category = document.getElementById('card-category').value || 'সংবাদ';
+            const fontSize = parseInt(document.getElementById('card-font-size').value) || 42;
+            const overlayOpacity = parseInt(document.getElementById('card-overlay').value) / 100;
+
+            // Clear Canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 1. Draw Background Image or Default Dark Gradient
+            if (customBgImage) {
+                ctx.drawImage(customBgImage, 0, 0, canvas.width, canvas.height);
+            } else {
+                // Default Newsroom Dark Backdrop
+                const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                if (currentTemplate === 'breaking') {
+                    grad.addColorStop(0, '#3b0764');
+                    grad.addColorStop(0.5, '#1e1b4b');
+                    grad.addColorStop(1, '#020617');
+                } else {
+                    grad.addColorStop(0, '#0f172a');
+                    grad.addColorStop(1, '#020617');
+                }
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+
+            // 2. Apply Custom Dark Overlay
+            ctx.fillStyle = `rgba(11, 15, 23, ${overlayOpacity})`;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 3. Draw Design Border Accent Lines
+            ctx.fillStyle = currentTemplate === 'breaking' ? '#dc2626' : '#2563eb';
+            ctx.fillRect(50, 50, 10, canvas.height - 100);
+
+            // 4. Draw Category Badge
+            ctx.fillStyle = currentTemplate === 'breaking' ? '#dc2626' : '#2563eb';
+            ctx.beginPath();
+            ctx.roundRect(80, 80, 200, 48, 8);
+            ctx.fill();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 22px "Hind Siliguri", sans-serif';
+            ctx.fillText(category, 105, 112);
+
+            // 5. Draw Custom Logo / Default Brand Marker
+            if (customLogoImage) {
+                ctx.drawImage(customLogoImage, canvas.width - 200, 70, 140, 50);
+            } else {
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 24px "Hind Siliguri", sans-serif';
+                ctx.fillText('DN BANGLA NEWS', canvas.width - 280, 110);
+            }
+
+            // 6. Multiline Headline Renderer Engine
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `bold ${fontSize}px "Hind Siliguri", sans-serif`;
+            
+            const words = headline.split(' ');
+            let line = '';
+            let y = 240;
+            const lineHeight = fontSize * 1.35;
+            const maxWidth = 1040;
+
+            for (let n = 0; n < words.length; n++) {
+                let testLine = line + words[n] + ' ';
+                let metrics = ctx.measureText(testLine);
+                if (metrics.width > maxWidth && n > 0) {
+                    ctx.fillText(line, 80, y);
+                    line = words[n] + ' ';
+                    y += lineHeight;
+                } else {
+                    line = testLine;
+                }
+            }
+            ctx.fillText(line, 80, y);
+
+            // 7. Footer Branding & Website Bar
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.fillRect(80, canvas.height - 110, canvas.width - 160, 2);
+
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '20px "Hind Siliguri", sans-serif';
+            ctx.fillText('🌐 dnbanglanews.com | সত্যের সন্ধানে সার্বক্ষণিক', 80, canvas.height - 70);
+        }
+
+        // Trigger Auto-Publishing Simulation
+        function triggerAutoPublish() {
+            const headline = document.getElementById('card-headline').value;
+            const newsUrl = document.getElementById('card-news-url').value;
+            const alertBox = document.getElementById('post-sim-alert');
+            
+            document.getElementById('sim-comment-link').innerText = newsUrl;
+            alertBox.classList.remove('hidden');
+
+            // Add to Live Log Feed
+            logsData.unshift({
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                status: 'SUCCESS',
+                platform: 'Facebook & Telegram',
+                msg: `অটো পোস্ট সম্পন্ন: "${headline.substring(0, 35)}..."`,
+                comment: newsUrl
+            });
+
+            updateLogsUI();
+
+            // Auto-scroll stat count
+            const statElem = document.getElementById('stat-today-posts');
+            let currentVal = parseInt(statElem.innerText);
+            statElem.innerText = (currentVal + 1) + ' টি';
+        }
+
+        // Download Generated PhotoCard PNG
+        function downloadCard() {
+            const canvas = document.getElementById('photocardCanvas');
+            const link = document.createElement('a');
+            link.download = 'News_PhotoCard_' + Date.now() + '.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // Preset Card Previews for Scheduler Tab
+        function previewPresetCard(type) {
+            switchTab('tab-generator');
+            const headlineInput = document.getElementById('card-headline');
+            const categoryInput = document.getElementById('card-category');
+
+            if(type === 'morning') {
+                categoryInput.value = 'শুভ সকাল';
+                headlineInput.value = 'শুভ সকাল! একটি সুন্দর দিনের প্রত্যাশায়। আজকের দিনটি আপনার ও আপনার পরিবারের জন্য বয়ে আনুক অনাবিল আনন্দ।';
+            } else if(type === 'weather') {
+                categoryInput.value = 'আবহাওয়া আপডেট';
+                headlineInput.value = 'আজকের ঢাকার তাপমাত্রা সর্বোচ্চ ৩৪° সে. এবং সর্বনিম্ন ২৭° সে.। আকাশ আংশিক মেঘলা থাকার সম্ভাবনা।';
+            } else if(type === 'prayer') {
+                categoryInput.value = 'নামাজের সময়সূচি';
+                headlineInput.value = 'আজকের পাঁচ ওয়াক্ত নামাজের সময়সূচি: ফজর- ৪:৩৫, জোহর- ১২:০৫, আসর- ৪:১৫, মাগরিব- ৬:১৫, এশা- ৭:৩০।';
+            } else if(type === 'history') {
+                categoryInput.value = 'ইতিহাসে আজকের দিন';
+                headlineInput.value = 'আজকের এই দিনে ইতিহাসে যা ঘটেছিল: বিখ্যাত কবি ও সাহিত্যিকদের জন্ম ও স্মরণীয় ঐতিহাসিক ঘটনাবলী।';
+            } else if(type === 'ramadan') {
+                categoryInput.value = 'রমজান সময়সূচি';
+                headlineInput.value = 'আজকের সেহেরির শেষ সময় ভোর ৪:১৫ মিনিট এবং ইফতারের সময় সন্ধ্যা ৬:১৮ মিনিট (ঢাকা ও পার্শ্ববর্তী এলাকা)।';
+            }
+            drawCard();
+        }
+
+        // Reels Simulation Player Motion
+        function startReelsSimulation() {
+            const progressBar = document.getElementById('reels-progress');
+            let width = 0;
+            const interval = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(interval);
+                    alert('রিলস ভিডিও ও এআই ভয়েসওভার সফলভাবে জেনারেট হয়ে ফেসবুকে পোস্ট হয়েছে!');
+                } else {
+                    width += 5;
+                    progressBar.style.width = width + '%';
+                }
+            }, 100);
+        }
+
+        // Live Log Updates UI Renderer
+        function updateLogsUI() {
+            const dashboardList = document.getElementById('dashboard-feed-list');
+            const fullLogContainer = document.getElementById('full-log-container');
+
+            if (dashboardList) {
+                dashboardList.innerHTML = logsData.slice(0, 4).map(item => `
+                    <div class="p-2.5 bg-dark-bg rounded-lg border border-dark-border flex items-start justify-between">
+                        <div>
+                            <span class="text-[10px] font-bold text-brand-500 uppercase">${item.platform}</span>
+                            <p class="font-semibold text-gray-200">${item.msg}</p>
+                            <a href="${item.comment}" target="_blank" class="text-[10px] text-sky-400 hover:underline truncate block max-w-[200px]">${item.comment}</a>
+                        </div>
+                        <span class="text-[10px] text-gray-500 font-mono">${item.time}</span>
+                    </div>
+                `).join('');
+            }
+
+            if (fullLogContainer) {
+                fullLogContainer.innerHTML = logsData.map(item => `
+                    <div class="flex items-center justify-between p-2 hover:bg-dark-card rounded transition">
+                        <div class="flex items-center space-x-3 space-x-reverse">
+                            <span class="text-emerald-400 font-bold">[${item.status}]</span>
+                            <span class="text-gray-400 font-mono">${item.time}</span>
+                            <span class="text-purple-400 font-semibold">[${item.platform}]</span>
+                            <span class="text-gray-200">${item.msg}</span>
+                        </div>
+                        <span class="text-sky-400 text-[11px] underline font-mono">${item.comment}</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function clearLogs() {
+            logsData.length = 0;
+            updateLogsUI();
+        }
+
+        function triggerGlobalSync() {
+            alert('আপনার নিউজ ওয়েবসাইট এবং ফেসবুক পেজ সফলভাবে সিঙ্ক করা হয়েছে!');
+        }
+    </script>
+</body>
+</html>
